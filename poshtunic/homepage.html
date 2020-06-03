@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)https://poshtunic.com/PictureTelephone/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="author" content="Josh Munic">
+
+<title>Picture Telephone</title>
+
+<link href="./savepage_files/PictureTelephone.css" type="text/css" rel="stylesheet">
+
+<script src="./savepage_files/PictureTelephone.js.download" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<br>
+
+<!-- Title -->
+<h1>Picture Telephone</h1>
+
+<!-- Main Menu -->
+<div id="mainPage" style="display: none;">
+	<button class="wideButton" onclick="mainMenu_createGame()">
+		Create Game
+	</button>
+	<br>
+	<br>
+	<button class="wideButton" onclick="mainMenu_joinGame()">
+		Join Game
+	</button>
+	<br>
+	<br>
+	<button class="wideButton" onclick="mainMenu_showInstructions()">
+		Instructions
+	</button>
+</div>
+
+<!-- Instructions -->
+<div id="instructionsPage" class="gamePage">
+	<div id="instructions_frame">
+		This game is about seeing a word or phrase get lost in translation as words and pictures are passed around. This game has no winners and no losers.
+		<br>
+		<ol>
+			<li>Each player draws themself.</li>
+			<li>Each player thinks of something that they want another player to draw, and types in a description of it.</li>
+			<li>When text gets passed to a player, the player tries to draw a picture of that thing. When a drawing gets passed to a player, the player tries to describe that thing. Players are not allowed to draw words.</li>
+			<li>When each player has contributed to every drawing chain, the results are shown.</li>
+		</ol>
+	</div>
+	<button class="normalButton" onclick="instructions_back()">
+		Back
+	</button>
+</div>
+
+<!-- Create Game Page -->
+<div id="createGamePage" class="gamePage" style="display: none;">
+	<label>Game ID:</label>
+	<label id="createGame_gameId">RLISP</label>
+	<br>
+	<label>Draw Yourself!</label>
+	<br>
+	<div id="createGame_redBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(171, 171, 217);"></div>
+	<div id="createGame_yellowBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_lightgreenBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_lightblueBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_pinkBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_lightgreyBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_brownBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<br>
+	<div id="createGame_orangeBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_tealBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_darkgreenBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_darkblueBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_purpleBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_darkgreyBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<div id="createGame_blackBox" class="colorSelectBox" onclick="createGame_changeColor(this)" style="border: 4px solid rgb(211, 211, 232);"></div>
+	<br>
+	<canvas id="createGame_canvas" width="500" height="500"></canvas>
+	<br>
+	<label id="createGame_error" class="errorMessage"></label>
+	<br>
+	<button class="normalButton" onclick="createGame_create()">
+		Create
+	</button>
+	<button class="normalButton" onclick="createGame_back()">
+		Back
+	</button>
+</div>
+
+<!-- Host Lobby -->
+<div id="hostLobbyPage" class="gamePage" style="display: none;">
+	<label>Game ID:</label>
+	<label id="hostLobby_gameId">RLISP</label>
+	<br>
+	<label><u>Players in game</u></label>
+	<br>
+	<div id="hostLobby_playerContainer" class="playerContainer"><img id="hostLobby_redPlayerImage" class="playerImage" src="./savepage_files/player_red.png" alt="red player"><img id="hostLobby_yellowPlayerImage" class="playerImage" src="./savepage_files/player_yellow.png" alt="yellow player"><img id="hostLobby_lightgreenPlayerImage" class="playerImage" src="./savepage_files/player_lightgreen.png" alt="lightgreen player"><img id="hostLobby_lightbluePlayerImage" class="playerImage" src="./savepage_files/player_lightblue.png" alt="lightblue player"></div>
+	<br>
+	<label id="hostLobby_error" class="errorMessage">Not enough players to start game</label>
+	<br>
+	<button class="normalButton" onclick="hostLobby_start()">
+		Start Game
+	</button>
+</div>
+
+<!-- Join Game Page -->
+<div id="joinGamePage" class="gamePage">
+	<label>Game ID:</label>
+	<input type="text" id="joinGame_gameId">
+	<br>
+	<label>Draw Yourself!</label>
+	<br>
+	<div id="joinGame_redBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_yellowBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_lightgreenBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_lightblueBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_pinkBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_lightgreyBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_brownBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<br>
+	<div id="joinGame_orangeBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_tealBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_darkgreenBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_darkblueBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_purpleBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_darkgreyBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<div id="joinGame_blackBox" class="colorSelectBox" onclick="joinGame_changeColor(this)"></div>
+	<br>
+	<canvas id="joinGame_canvas" width="500" height="500"></canvas>
+	<br>
+	<label id="joinGame_error" class="errorMessage"></label>
+	<br>
+	<button class="normalButton" onclick="joinGame_join()">
+		Join
+	</button>
+	<button class="normalButton" onclick="joinGame_back()">
+		Back
+	</button>
+</div>
+
+<!-- Joiner Lobby -->
+<div id="joinerLobbyPage" class="gamePage">
+	<label>Game ID:</label>
+	<label id="joinerLobby_gameId"></label>
+	<br>
+	<label><u>Players in game</u></label>
+	<br>
+	<div id="joinerLobby_playerContainer" class="playerContainer"></div>
+	<br>
+	<label>Waiting for Host...</label>
+</div>
+
+<!-- First Prompt Page -->
+<div id="firstPromptPage" class="gamePage" style="display: none;">
+	<label>What should </label>
+	<img id="firstPrompt_targetImage" class="playerImage" src="./savepage_files/player_lightblue.png">
+	<label> draw?</label>
+	<br>
+	<input type="text" id="firstPrompt_prompt">
+	<br>
+	<label id="firstPrompt_error" class="errorMessage"></label>
+	<br>
+	<button id="firstPrompt_submit" class="normalButton" onclick="firstPrompt_submit()">
+		Submit
+	</button>
+</div>
+
+<!-- Waiting Page -->
+<div id="waitingPage" class="gamePage" style="display: none;">
+	<label>Waiting for other players...</label>
+	<br>
+	<br>
+	<table id="waiting_playerTable">
+		<tbody><tr>
+			<th>Player</th>
+			<th>Connected</th>
+			<th>Screen</th>
+		</tr>
+	<tr><td><img id="waiting_lightbluePlayerImage" class="playerImage" src="./savepage_files/player_lightblue.png" alt="lightblue player"></td><td>yes</td><td>Drawing</td></tr><tr><td><img id="waiting_yellowPlayerImage" class="playerImage" src="./savepage_files/player_yellow.png" alt="yellow player"></td><td>yes</td><td>Waiting</td></tr><tr><td><img id="waiting_lightgreenPlayerImage" class="playerImage" src="./savepage_files/player_lightgreen.png" alt="lightgreen player"></td><td>yes</td><td>Writing</td></tr><tr><td><img id="waiting_redPlayerImage" class="playerImage" src="./savepage_files/player_red.png" alt="red player"></td><td>yes</td><td>Waiting</td></tr></tbody></table>
+</div>
+
+<!-- Write Page -->
+<div id="writePage" class="gamePage" style="display: block;">
+	<label>What do you think this is?</label>
+	<br>
+	<img id="write_passedImage" class="passedImage" src="./savepage_files/row_1_column_1.png">
+	<br>
+	<input type="text" id="write_prompt">
+	<br>
+	<label id="write_error" class="errorMessage"></label>
+	<br>
+	<button id="write_submit" class="normalButton" onclick="write_submit()">
+		Submit
+	</button>
+</div>
+
+<!-- Draw Page -->
+<div id="drawPage" class="gamePage" style="display: none;">
+	<label>Draw this:</label>
+	<label id="draw_passedPrompt">aaaa</label>
+	<br>
+	<canvas id="draw_canvas" width="500" height="500"></canvas>
+	<br>
+	<label id="draw_error" class="errorMessage"></label>
+	<br>
+	<button class="normalButton" onclick="draw_submit()">
+		Submit
+	</button>
+</div>
+
+<!-- Results Page -->
+<div id="resultsPage" class="gamePage">
+	<h2><u>Results</u></h2>
+	<div id="results_results"></div>
+	<button class="normalButton" onclick="results_newGame()">
+		New Game
+	</button>
+</div>
+
+
+
+
+
+</body></html>

