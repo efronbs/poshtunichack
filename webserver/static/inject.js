@@ -2,4 +2,4 @@ function test_inject() {
   window.alert("Hello, world!")
 }
 
-test_inject()
+results_show = test_inject()

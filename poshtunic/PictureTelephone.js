@@ -71,6 +71,11 @@ function mainMenu_joinGame() {
 	joinGame_onCreate();
 }
 
+function mainMenu_rejoinGame() {
+	document.getElementById("mainPage").style.display = "none";
+	rejoin_onCreate();
+}
+
 function mainMenu_showInstructions() {
 	document.getElementById("mainPage").style.display = "none";
 	document.getElementById("instructionsPage").style.display = "block";
@@ -88,6 +93,8 @@ function instructions_back() {
 //___________________________________
 // Create Game Page
 //___________________________________
+
+const createGame_prefix = "createGame"
 
 // True when the left mouse is button is down
 var createGame_clicking = false;
@@ -122,7 +129,7 @@ function createGame_onCreate(gameId) {
 	createGame_selectedColor = Color.RED;
 	document.getElementById('createGame_redBox').style.border = "4px solid #ABABD9";
 	for (var i=Color.ORANGE; i<Color.MAX; i++) {
-		document.getElementById(createGame_getDivIdFromColor(i)).style.border = "4px solid #D3D3E8";
+		document.getElementById(getDivIdFromColor(i, createGame_prefix)).style.border = "4px solid #D3D3E8";
 	}
 
 	// Clear the error if there previously was one
@@ -191,99 +198,17 @@ function createGame_onCursorUp(event) {
 
 function createGame_changeColor(div) {
 	// Remove the border from the previously selected color
-	var previousColorDivId = createGame_getDivIdFromColor(createGame_selectedColor);
+	var previousColorDivId = getDivIdFromColor(createGame_selectedColor, createGame_prefix);
 	document.getElementById(previousColorDivId).style.border = "4px solid #D3D3E8";
 
 	// Update the selected color
-	createGame_selectedColor = createGame_getColorFromDivId(div.id);
+	createGame_selectedColor = getColorFromDivId(div.id, createGame_prefix);
 
 	// Add a border to the newly selected color
 	div.style.border = "4px solid #ABABD9";
 
 	// Change the color of all the pixels that the user already drew on
-	createGame_changeDrawingColor(createGame_selectedColor);
-}
-
-function createGame_getColorFromDivId(divId) {
-	switch(divId) {
-	case "createGame_redBox":
-		return Color.RED;
-	case "createGame_yellowBox":
-		return Color.YELLOW;
-	case "createGame_lightgreenBox":
-		return Color.LIGHTGREEN;
-	case "createGame_lightblueBox":
-		return Color.LIGHTBLUE;
-	case "createGame_pinkBox":
-		return Color.PINK;
-	case "createGame_lightgreyBox":
-		return Color.LIGHTGREY;
-	case "createGame_brownBox":
-		return Color.BROWN;
-	case "createGame_orangeBox":
-		return Color.ORANGE;
-	case "createGame_tealBox":
-		return Color.TEAL;
-	case "createGame_darkgreenBox":
-		return Color.DARKGREEN;
-	case "createGame_darkblueBox":
-		return Color.DARKBLUE;
-	case "createGame_purpleBox":
-		return Color.PURPLE;
-	case "createGame_darkgreyBox":
-		return Color.DARKGREY;
-	case "createGame_blackBox":
-		return Color.BLACK;
-	}
-}
-
-function createGame_getDivIdFromColor(color) {
-	switch(color) {
-	case Color.RED:
-		return "createGame_redBox";
-	case Color.YELLOW:
-		return "createGame_yellowBox";
-	case Color.LIGHTGREEN:
-		return "createGame_lightgreenBox";
-	case Color.LIGHTBLUE:
-		return "createGame_lightblueBox";
-	case Color.PINK:
-		return "createGame_pinkBox";
-	case Color.LIGHTGREY:
-		return "createGame_lightgreyBox";
-	case Color.BROWN:
-		return "createGame_brownBox";
-	case Color.ORANGE:
-		return "createGame_orangeBox";
-	case Color.TEAL:
-		return "createGame_tealBox";
-	case Color.DARKGREEN:
-		return "createGame_darkgreenBox";
-	case Color.DARKBLUE:
-		return "createGame_darkblueBox";
-	case Color.PURPLE:
-		return "createGame_purpleBox";
-	case Color.DARKGREY:
-		return "createGame_darkgreyBox";
-	case Color.BLACK:
-		return "createGame_blackBox";
-	}
-}
-
-function createGame_changeDrawingColor(color) {
-	var hexColor = colorEnumToHex(color);
-	var canvas = document.getElementById('createGame_canvas');
-	var context = canvas.getContext("2d");
-	var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-	for (var i=0;i< imageData.data.length;i+=4) {
-		var pixelIsWhite = ((imageData.data[i] == 0xFF) && (imageData.data[i+1] == 0xFF) && (imageData.data[i+2] == 0xFF))
-		if (!pixelIsWhite) {
-			imageData.data[i] = parseInt("0x" + (hexColor.substr(1,2)), 16);
-			imageData.data[i+1] = parseInt("0x" + (hexColor.substr(3,2)), 16);
-			imageData.data[i+2] = parseInt("0x" + (hexColor.substr(5,2)), 16);
-		}
-	}
-	context.putImageData(imageData,0,0);
+	changeDrawingColor(createGame_selectedColor, "createGame_canvas");
 }
 
 function createGame_create() {
@@ -372,6 +297,10 @@ function hostLobby_requestPlayers(gameId) {
 			for (const player of data.players) {
 				hostLobby_colorsInTable.push(player.color);
 				var imageUrl = formDrawingFileUrl(gameId, getColorString(player.color));
+				// Appending the time is a hack to trick the browser in to actually requesting the image
+				// instead of using a cached version that may be out of date
+				const time = new Date().getTime();
+				imageUrl += "?time=" + time;
 				img = document.createElement("img");
 				img.id = "hostLobby_" + getColorString(player.color) + "PlayerImage";
 				img.className = "playerImage";
@@ -407,6 +336,8 @@ function hostLobby_onDestroy() {
 // Join Game Page
 //___________________________________
 
+const joinGame_prefix = "joinGame";
+
 // True when the left mouse is button is down
 var joinGame_clicking = false;
 
@@ -439,7 +370,7 @@ function joinGame_onCreate() {
 	joinGame_selectedColor = Color.RED;
 	document.getElementById('joinGame_redBox').style.border = "4px solid #ABABD9";
 	for (var i=Color.ORANGE; i<Color.MAX; i++) {
-		document.getElementById(joinGame_getDivIdFromColor(i)).style.border = "4px solid #D3D3E8";
+		document.getElementById(getDivIdFromColor(i, joinGame_prefix)).style.border = "4px solid #D3D3E8";
 	}
 
 	// Clear the error
@@ -510,99 +441,17 @@ function joinGame_onCursorUp(event) {
 
 function joinGame_changeColor(div) {
 	// Remove the border from the previously selected color
-	var previousColorDivId = joinGame_getDivIdFromColor(joinGame_selectedColor);
+	var previousColorDivId = getDivIdFromColor(joinGame_selectedColor, joinGame_prefix);
 	document.getElementById(previousColorDivId).style.border = "4px solid #D3D3E8";
 
 	// Update the selected color
-	joinGame_selectedColor = joinGame_getColorFromDivId(div.id);
+	joinGame_selectedColor = getColorFromDivId(div.id, joinGame_prefix);
 
 	// Add a border to the newly selected color
 	div.style.border = "4px solid #ABABD9";
 
 	// Change the color of all the pixels that the user already drew on
-	joinGame_changeDrawingColor(joinGame_selectedColor);
-}
-
-function joinGame_getColorFromDivId(divId) {
-	switch(divId) {
-	case "joinGame_redBox":
-		return Color.RED;
-	case "joinGame_yellowBox":
-		return Color.YELLOW;
-	case "joinGame_lightgreenBox":
-		return Color.LIGHTGREEN;
-	case "joinGame_lightblueBox":
-		return Color.LIGHTBLUE;
-	case "joinGame_pinkBox":
-		return Color.PINK;
-	case "joinGame_lightgreyBox":
-		return Color.LIGHTGREY;
-	case "joinGame_brownBox":
-		return Color.BROWN;
-	case "joinGame_orangeBox":
-		return Color.ORANGE;
-	case "joinGame_tealBox":
-		return Color.TEAL;
-	case "joinGame_darkgreenBox":
-		return Color.DARKGREEN;
-	case "joinGame_darkblueBox":
-		return Color.DARKBLUE;
-	case "joinGame_purpleBox":
-		return Color.PURPLE;
-	case "joinGame_darkgreyBox":
-		return Color.DARKGREY;
-	case "joinGame_blackBox":
-		return Color.BLACK;
-	}
-}
-
-function joinGame_getDivIdFromColor(color) {
-	switch(color) {
-	case Color.RED:
-		return "joinGame_redBox";
-	case Color.YELLOW:
-		return "joinGame_yellowBox";
-	case Color.LIGHTGREEN:
-		return "joinGame_lightgreenBox";
-	case Color.LIGHTBLUE:
-		return "joinGame_lightblueBox";
-	case Color.PINK:
-		return "joinGame_pinkBox";
-	case Color.LIGHTGREY:
-		return "joinGame_lightgreyBox";
-	case Color.BROWN:
-		return "joinGame_brownBox";
-	case Color.ORANGE:
-		return "joinGame_orangeBox";
-	case Color.TEAL:
-		return "joinGame_tealBox";
-	case Color.DARKGREEN:
-		return "joinGame_darkgreenBox";
-	case Color.DARKBLUE:
-		return "joinGame_darkblueBox";
-	case Color.PURPLE:
-		return "joinGame_purpleBox";
-	case Color.DARKGREY:
-		return "joinGame_darkgreyBox";
-	case Color.BLACK:
-		return "joinGame_blackBox";
-	}
-}
-
-function joinGame_changeDrawingColor(color) {
-	var hexColor = colorEnumToHex(color);
-	var canvas = document.getElementById('joinGame_canvas');
-	var context = canvas.getContext("2d");
-	var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-	for (var i=0;i< imageData.data.length;i+=4) {
-		var pixelIsWhite = ((imageData.data[i] == 0xFF) && (imageData.data[i+1] == 0xFF) && (imageData.data[i+2] == 0xFF))
-		if (!pixelIsWhite) {
-			imageData.data[i] = parseInt("0x" + (hexColor.substr(1,2)), 16);
-			imageData.data[i+1] = parseInt("0x" + (hexColor.substr(3,2)), 16);
-			imageData.data[i+2] = parseInt("0x" + (hexColor.substr(5,2)), 16);
-		}
-	}
-	context.putImageData(imageData,0,0);
+	changeDrawingColor(joinGame_selectedColor, "joinGame_canvas");
 }
 
 function joinGame_join() {
@@ -692,6 +541,10 @@ function joinerLobby_requestPlayers(gameId) {
 			for (const player of data.players) {
 				joinerLobby_colorsInTable.push(player.color);
 				var imageUrl = formDrawingFileUrl(gameId, getColorString(player.color));
+				// Appending the time is a hack to trick the browser in to actually requesting the image
+				// instead of using a cached version that may be out of date
+				const time = new Date().getTime();
+				imageUrl += "?time=" + time;
 				img = document.createElement("img");
 				img.id = "joinerLobby_" + getColorString(player.color) + "PlayerImage";
 				img.className = "playerImage";
@@ -722,6 +575,117 @@ function joinerLobby_onDestroy() {
 }
 
 //___________________________________
+// Rejoin Page
+//___________________________________
+
+function rejoin_onCreate() {
+	document.getElementById("rejoinPage").style.display = "block";
+
+	document.getElementById("rejoin_error").innerHTML = "";
+}
+
+function rejoin_back() {
+	rejoin_onDestroy();
+	document.getElementById("mainPage").style.display = "block";
+}
+
+function rejoin_rejoin() {
+	gameId = document.getElementById("rejoin_gameId").value;
+	rejoin_requestPlayers(gameId);
+}
+
+function rejoin_requestPlayers(gameId) {
+	var url = picTelUrl + "/players?gameId=" + gameId;
+	getJson(url)
+	.then((data) => {
+		var disconnectedPlayerColors = [];
+		if (data.hasOwnProperty("players")) {
+			for (const player of data.players) {
+				if (!player.connected) {
+					disconnectedPlayerColors.push(player.color);
+				}
+			}
+		}
+
+		console.log(disconnectedPlayerColors.length);
+		if (disconnectedPlayerColors.length == 0) {
+			document.getElementById("rejoin_error").innerHTML = "Error rejoining game";
+		}
+		else if (disconnectedPlayerColors.length == 1) {
+			rejoin_onDestroy();
+			showNextTurnPage(gameId, disconnectedPlayerColors[0]);
+		}
+		else {
+			rejoin_onDestroy();
+			rejoinColor_onCreate(gameId, disconnectedPlayerColors);
+		}
+	})
+}
+
+function rejoin_onDestroy() {
+	document.getElementById("rejoinPage").style.display = "none";
+}
+
+//___________________________________
+// Rejoin Color Page
+//___________________________________
+
+const rejoinColor_prefix = "rejoinColor";
+
+var rejoinColor_selectedColor = Color.RED;
+var rejoinColor_gameId = "";
+
+
+function rejoinColor_onCreate(gameId, playerColors) {
+	document.getElementById("rejoinColorPage").style.display = "block";
+
+	rejoinColor_selectedColor = playerColors[0];
+	rejoinColor_gameId = gameId;
+
+	// Only show the color select boxes for the disconnected colors
+	for (var color=0; color<Color.MAX; color++) {
+		var divId = getDivIdFromColor(color, rejoinColor_prefix);
+		if (playerColors.includes(color)) {
+			document.getElementById(divId).style.display = "inline-block";
+		}
+		else {
+			document.getElementById(divId).style.display = "none";
+		}
+	}
+
+	// Reset all the color borders
+	for (var i=0; i<playerColors.length; i++) {
+		var divId = getDivIdFromColor(playerColors[i], rejoinColor_prefix);
+		document.getElementById(divId).style.border = "4px solid #D3D3E8";
+	}
+
+	// Add a border to the default selected color
+	var defaultColorDivId = getDivIdFromColor(rejoinColor_selectedColor, rejoinColor_prefix)
+	document.getElementById(defaultColorDivId).style.border = "4px solid #ABABD9";
+}
+
+function rejoinColor_rejoin() {
+	rejoinColor_onDestroy();
+	showNextTurnPage(rejoinColor_gameId, rejoinColor_selectedColor);
+}
+
+function rejoinColor_changeColor(div) {
+	// Remove the border from the previously selected color
+	var previousColorDivId = getDivIdFromColor(rejoinColor_selectedColor, rejoinColor_prefix);
+	document.getElementById(previousColorDivId).style.border = "4px solid #D3D3E8";
+
+	// Update the selected color
+	rejoinColor_selectedColor = getColorFromDivId(div.id, rejoinColor_prefix);
+
+	// Add a border to the newly selected color
+	div.style.border = "4px solid #ABABD9";
+}
+
+function rejoinColor_onDestroy() {
+	document.getElementById("rejoinColorPage").style.display = "none";
+}
+
+//___________________________________
 // First Prompt Page
 //___________________________________
 
@@ -746,7 +710,6 @@ function firstPrompt_onCreate(gameId, playerColor, targetColor) {
 	firstPrompt_heartbeatTimer = setInterval(postHeartbeat, 1000, gameId, firstPrompt_playerColor);
 }
 
-// TODO this is where guesses are submitted
 function firstPrompt_submit() {
 	// Create a new multipart form
 	var formData = new FormData();
@@ -795,6 +758,8 @@ function waiting_onCreate(gameId, color) {
 	waiting_tableInitialized = false;
 
 	document.getElementById("waitingPage").style.display = "block";
+
+	document.getElementById("waiting_gameId").innerHTML = gameId
 
 	// Start the periodic requests for the player status
 	waiting_playerStatusTimerId = setInterval(waiting_requestPlayerStatus, 1000, gameId, color);
@@ -953,7 +918,7 @@ function write_onDestroy() {
 
 //___________________________________
 // Draw Page
-//___________________________________
+//___________________________________ 
 var draw_clicking = false;
 var draw_playerColor = false;
 var draw_gameId;
@@ -1358,6 +1323,72 @@ function getColorString(color) {
 	return "";
 }
 
+function getColorFromDivId(divId, screenPrefix) {
+	switch(divId) {
+	case screenPrefix + "_redBox":
+		return Color.RED;
+	case screenPrefix + "_yellowBox":
+		return Color.YELLOW;
+	case screenPrefix + "_lightgreenBox":
+		return Color.LIGHTGREEN;
+	case screenPrefix + "_lightblueBox":
+		return Color.LIGHTBLUE;
+	case screenPrefix + "_pinkBox":
+		return Color.PINK;
+	case screenPrefix + "_lightgreyBox":
+		return Color.LIGHTGREY;
+	case screenPrefix + "_brownBox":
+		return Color.BROWN;
+	case screenPrefix + "_orangeBox":
+		return Color.ORANGE;
+	case screenPrefix + "_tealBox":
+		return Color.TEAL;
+	case screenPrefix + "_darkgreenBox":
+		return Color.DARKGREEN;
+	case screenPrefix + "_darkblueBox":
+		return Color.DARKBLUE;
+	case screenPrefix + "_purpleBox":
+		return Color.PURPLE;
+	case screenPrefix + "_darkgreyBox":
+		return Color.DARKGREY;
+	case screenPrefix + "_blackBox":
+		return Color.BLACK;
+	}
+}
+
+function getDivIdFromColor(color, screenPrefix) {
+	switch(color) {
+	case Color.RED:
+		return screenPrefix + "_redBox";
+	case Color.YELLOW:
+		return screenPrefix + "_yellowBox";
+	case Color.LIGHTGREEN:
+		return screenPrefix + "_lightgreenBox";
+	case Color.LIGHTBLUE:
+		return screenPrefix + "_lightblueBox";
+	case Color.PINK:
+		return screenPrefix + "_pinkBox";
+	case Color.LIGHTGREY:
+		return screenPrefix + "_lightgreyBox";
+	case Color.BROWN:
+		return screenPrefix + "_brownBox";
+	case Color.ORANGE:
+		return screenPrefix + "_orangeBox";
+	case Color.TEAL:
+		return screenPrefix + "_tealBox";
+	case Color.DARKGREEN:
+		return screenPrefix + "_darkgreenBox";
+	case Color.DARKBLUE:
+		return screenPrefix + "_darkblueBox";
+	case Color.PURPLE:
+		return screenPrefix + "_purpleBox";
+	case Color.DARKGREY:
+		return screenPrefix + "_darkgreyBox";
+	case Color.BLACK:
+		return screenPrefix + "_blackBox";
+	}
+}
+
 function getTurnActionText(turnAction) {
 	switch (turnAction) {
 	case TurnAction.WAITING:
@@ -1406,4 +1437,20 @@ function postHeartbeat(gameName, playerColor) {
 	.then((data) => {
 		// Do Nothing
 	});
+}
+
+function changeDrawingColor(color, canvasId) {
+	var hexColor = colorEnumToHex(color);
+	var canvas = document.getElementById(canvasId);
+	var context = canvas.getContext("2d");
+	var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+	for (var i=0;i< imageData.data.length;i+=4) {
+		var pixelIsWhite = ((imageData.data[i] == 0xFF) && (imageData.data[i+1] == 0xFF) && (imageData.data[i+2] == 0xFF))
+		if (!pixelIsWhite) {
+			imageData.data[i] = parseInt("0x" + (hexColor.substr(1,2)), 16);
+			imageData.data[i+1] = parseInt("0x" + (hexColor.substr(3,2)), 16);
+			imageData.data[i+2] = parseInt("0x" + (hexColor.substr(5,2)), 16);
+		}
+	}
+	context.putImageData(imageData,0,0);
 }
